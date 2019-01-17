@@ -1,10 +1,14 @@
 package test.logging;
 
 import io.vertx.core.AbstractVerticle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SimpleServer extends AbstractVerticle {
+
+  private Logger log = LoggerFactory.getLogger(SimpleServer.class);
 
   @Override
   public void start() {
@@ -14,10 +18,10 @@ public class SimpleServer extends AbstractVerticle {
         Util.putRequestId();
 
         String param = req.getParam("param");
-        System.out.printf("[%s] [%s] Server got new request: %s%n", Util.getThreadName(), Util.getRequestId(), param);
+        log.info("Server got new request: {}", param);
 
         vertx.executeBlocking(fut -> {
-          System.out.printf("[%s] [%s] Before waiting: %s%n", Util.getThreadName(), Util.getRequestId(), param);
+          log.info("Before waiting: {}", param);
           try {
             MILLISECONDS.sleep(50);
           } catch (InterruptedException e) {
@@ -25,7 +29,7 @@ public class SimpleServer extends AbstractVerticle {
           }
           fut.complete();
         }, false, bar -> {
-          System.out.printf("[%s] [%s] End of request: %s%n", Util.getThreadName(), Util.getRequestId(), param);
+          log.info("End of request: {}", param);
           req.response().end("OK!\r\n");
         });
 
