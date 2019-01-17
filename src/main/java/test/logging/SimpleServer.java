@@ -3,6 +3,9 @@ package test.logging;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.web.client.HttpRequest;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.codec.BodyCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +18,15 @@ public class SimpleServer extends AbstractVerticle {
   private static final Logger log = LoggerFactory.getLogger(SimpleServer.class);
 
   private MongoClient mongoClient;
+  private HttpRequest<JsonObject> request;
 
   @Override
   public void start() {
     mongoClient = MongoClient.createShared(vertx, new JsonObject());
+
+    WebClient webClient = WebClient.create(vertx);
+    request = webClient.getAbs("http://worldclockapi.com/api/json/utc/now")
+      .as(BodyCodec.jsonObject());
 
     vertx.createHttpServer()
       .requestHandler(req -> {
@@ -41,8 +49,13 @@ public class SimpleServer extends AbstractVerticle {
             }
             fut.complete();
           }, false, bar -> {
-            log.info("End of request: {}", param);
-            req.response().end("OK!\r\n");
+            log.info("End of waiting: {}", param);
+
+            request.send(rar -> {
+              log.info("Received webClient response for ({}): {}", param, rar.result().body().getString("currentDateTime"));
+
+              req.response().end("OK!\r\n");
+            });
           });
 
         });
