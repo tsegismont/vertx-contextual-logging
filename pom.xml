@@ -9,8 +9,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <!-- vert.x properties -->
-    <vertx.version>4.0.0-tracing</vertx.version>
     <vertx.verticle>test.logging.SimpleServer</vertx.verticle>
     <!-- Maven plugins -->
     <vertx-maven-plugin.version>1.0.18</vertx-maven-plugin.version>
@@ -19,7 +17,12 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
-      <version>${vertx.version}</version>
+      <version>4.0.0-tracing</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-mongo-client</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
