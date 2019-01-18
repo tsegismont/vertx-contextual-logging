@@ -8,8 +8,12 @@ import java.util.UUID;
 public class Util {
 
   public static void putRequestId() {
+    putRequestId(UUID.randomUUID().toString());
+  }
+
+  public static void putRequestId(String requestId) {
     ContextInternal context = (ContextInternal) Vertx.currentContext();
-    context.localContextData().put("requestId", UUID.randomUUID().toString());
+    context.localContextData().put("requestId", requestId);
   }
 
   public static String getRequestId() {

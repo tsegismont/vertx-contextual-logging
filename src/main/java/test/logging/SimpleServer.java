@@ -1,6 +1,7 @@
 package test.logging;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -27,6 +28,24 @@ public class SimpleServer extends AbstractVerticle {
 
   @Override
   public void start() {
+    vertx.eventBus().addOutboundInterceptor(event -> {
+      String requestId = Util.getRequestId();
+      if (requestId != null) {
+        event.message().headers().add("__vertx.requestId", requestId);
+      }
+      event.next();
+    });
+
+    vertx.eventBus().addInboundInterceptor(event -> {
+      String requestId = event.message().headers().get("__vertx.requestId");
+      if (requestId != null) {
+        Util.putRequestId(requestId);
+      }
+      event.next();
+    });
+
+    vertx.deployVerticle(SimpleConsumer::new, new DeploymentOptions());
+
     mongoClient = MongoClient.createShared(vertx, new JsonObject());
 
     WebClient webClient = WebClient.create(vertx);
@@ -56,10 +75,16 @@ public class SimpleServer extends AbstractVerticle {
           }, false, bar -> {
             log.info("End of waiting: {}", param);
 
-            request.send(rar -> {
-              log.info("Received webClient response for ({}): {}", param, rar.result().body().getString("currentDateTime"));
+            vertx.eventBus().send("test", "Hi", sar -> {
 
-              req.response().end("OK!\r\n");
+              log.info("Event bus reply received: {}", param);
+
+              request.send(rar -> {
+                log.info("Received webClient response for ({}): {}", param, rar.result().body().getString("currentDateTime"));
+
+                req.response().end("OK!\r\n");
+              });
+
             });
           });
 
