@@ -1,13 +1,14 @@
 package test.logging;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.codec.BodyCodec;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.UUID;
 
@@ -15,10 +16,14 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SimpleServer extends AbstractVerticle {
 
-  private static final Logger log = LoggerFactory.getLogger(SimpleServer.class);
+  private static final Logger log = LogManager.getLogger(SimpleServer.class);
 
   private MongoClient mongoClient;
   private HttpRequest<JsonObject> request;
+
+  public static void main(String[] args) {
+    Vertx.vertx().deployVerticle(new SimpleServer());
+  }
 
   @Override
   public void start() {
