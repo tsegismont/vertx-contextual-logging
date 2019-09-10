@@ -1,0 +1,111 @@
+= Vert.x Streams utilities
+:group-id: io.github.tsegismont
+:artifact-id: streamutils
+:version: 1.0.0
+:streams-class: io.github.tsegismont.streamutils.Streams
+
+image:https://travis-ci.org/tsegismont/streamutils.svg?branch=master["Build Status", link="https://travis-ci.org/tsegismont/streamutils"]
+
+A set of utilities for Vert.x streams.
+
+== Purpose
+
+Provide tools for simple transformations of stream data (e.g. `map`, `filter`, `skip`).
+
+For anything beyond simple transformations, consider using a https://www.reactive-streams.org/[Reactive Streams] implementation like https://github.com/ReactiveX/RxJava[RxJava].
+
+== Dependency setup
+
+=== Maven
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+  <groupId>{group-id}</groupId>
+  <artifactId>{artifact-id}</artifactId>
+  <version>{version}</version>
+</dependency>
+----
+
+=== Gradle Kotlin DSL
+
+[source,kotlin,subs="attributes+"]
+----
+implementation("{group-id}:{artifact-id}:{version}")
+----
+
+=== Gradle Groovy DSL:
+
+[source,groovy,subs="attributes+"]
+----
+implementation '{group-id}:{artifact-id}:{version}'
+----
+
+== Usage
+
+=== Java
+
+Import the `{streams-class}` class.
+
+Then use operators to transform streams.
+Here's an `io.vertx.core.file.AsyncFile` transformation example:
+
+[source,java]
+----
+// Splits file content into lines
+RecordParser parser = RecordParser.newDelimited("\n", asyncFile);
+// Transform line bytes to String
+ReadStream<String> lines = Streams.map(parser, Buffer::toString);
+// Get the line length
+ReadStream<Integer> sizes = Streams.map(lines, String::length);
+// Skip the first 50 lines
+ReadStream<Integer> skipped = Streams.skip(sizes, 50);
+// Limit result to 150 lines
+ReadStream<Integer> result = Streams.limit(skipped, 150);
+----
+
+=== Groovy
+
+This library comes with a Groovy extension module that adds operators to Vert.x streams.
+Here's an `io.vertx.core.file.AsyncFile` transformation example:
+
+[source,groovy]
+----
+// Splits file content into lines
+def parser = RecordParser.newDelimited("\n", asyncFile)
+
+def result = parser
+  // Transform line bytes to String
+  .map { Buffer buffer -> buffer.toString() }
+  // Get the line length
+  .map { String line -> line.length() }
+  // Skip the first 50 lines
+  .skip(50)
+  // Limit result to 150 lines
+  .limit(150)
+----
+
+=== Kotlin
+
+This library comes with Kotlin extension functions that add operators to Vert.x streams.
+Here's an `io.vertx.core.file.AsyncFile` transformation example:
+
+[source,kotlin]
+----
+// Splits file content into lines
+val parser = RecordParser.newDelimited("\n", asyncFile)
+
+val result = parser
+  // Transform line bytes to String
+  .map(Buffer::toString)
+  // Get the line length
+  .map(String::length)
+  // Skip the first 50 lines
+  .skip(50)
+  // Limit result to 150 lines
+  .limit(150)
+----
+
+== License
+
+Apache License version 2.0.

@@ -1,0 +1,18 @@
+language: java
+install: true
+branches:
+  only:
+    - master
+cache:
+  directories:
+    - "$HOME/.m2"
+jobs:
+  include:
+    - stage: test
+      name: Unit tests - OpenJDK 8
+      script: mvn -B test
+      jdk: openjdk8
+    - name: Compile - OpenJDK 11
+      if: type != pull_request
+      script: mvn -B compile
+      jdk: openjdk11
