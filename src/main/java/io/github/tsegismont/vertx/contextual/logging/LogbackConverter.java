@@ -54,7 +54,7 @@ public class LogbackConverter extends ClassicConverter {
   public String convert(ILoggingEvent event) {
     ContextInternal context = (ContextInternal) Vertx.currentContext();
     if (context != null && key != null) {
-      return context.localContextData().getOrDefault(key, defaultValue).toString();
+      return ContextualData.getOrDefault(key, defaultValue);
     }
     return defaultValue;
   }

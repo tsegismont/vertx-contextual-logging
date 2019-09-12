@@ -49,7 +49,7 @@ public class Log4j2Converter extends LogEventPatternConverter {
   public void format(LogEvent event, StringBuilder toAppendTo) {
     ContextInternal context = (ContextInternal) Vertx.currentContext();
     if (context != null && key != null) {
-      toAppendTo.append(context.localContextData().getOrDefault(key, defaultValue).toString());
+      toAppendTo.append(ContextualData.getOrDefault(key, defaultValue));
     } else {
       toAppendTo.append(defaultValue);
     }
