@@ -174,7 +174,7 @@ For example, it is restored when using the Vert.x:
 * SQL Clients (PostgreSQL, MySQL)
 * ... etc
 
-It's also restored when a timer fires or when a task submitted to `executeBlocking` completes.
+It's also restored when a timer fires or when a task is submitted to `executeBlocking` or completes.
 
 However, contextual data is not propagated over the `EventBus`.
 In this case, it must be:
