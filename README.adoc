@@ -182,7 +182,26 @@ In this case, it must be:
 * added to message headers on the sender side
 * retrieved from headers and saved again on the receiver side
 
-This process can be automated with `EventBus` interceptors.
+This process can be automated with `EventBus` interceptors:
+
+[source,java]
+----
+vertx.eventBus().addOutboundInterceptor(event -> {
+  String requestId = ContextualData.get("requestId");
+  if (requestId != null) {
+    event.message().headers().add("requestId", requestId);
+  }
+  event.next();
+});
+
+vertx.eventBus().addInboundInterceptor(event -> {
+  String requestId = event.message().headers().get("requestId");
+  if (requestId != null) {
+    ContextualData.put("requestId", requestId);
+  }
+  event.next();
+});
+----
 
 == License
 
