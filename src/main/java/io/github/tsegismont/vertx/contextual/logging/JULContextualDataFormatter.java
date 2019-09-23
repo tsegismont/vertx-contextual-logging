@@ -34,9 +34,9 @@ public final class JULContextualDataFormatter extends Formatter {
 
   private static final String placeholderPrefix = "%{";
   private static final String placeholderSuffix = "}";
+  private static final String defaultEmpty = "-";
 
   private final String template;
-
   private final Date dat = new Date();
 
   private static final List<String> RESERVED = Arrays.asList("date", "source", "logger", "level", "message", "thrown");
@@ -76,7 +76,7 @@ public final class JULContextualDataFormatter extends Formatter {
     resolvers.add((record, ctx) -> formatMessage(record));
     // 6. thrown
     resolvers.add((record, ctx) -> {
-      String throwable = "";
+      String throwable = defaultEmpty;
       if (record.getThrown() != null) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
@@ -115,7 +115,7 @@ public final class JULContextualDataFormatter extends Formatter {
             ctxKey = placeholder.substring(0, defIndex);
             defValue = placeholder.substring(defIndex + 2);
           } else {
-            defValue = "-";
+            defValue = defaultEmpty;
             ctxKey = placeholder;
           }
 
