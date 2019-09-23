@@ -25,6 +25,7 @@ This project uses an alternative storage method for contextual data and makes it
 
 * Logback
 * Log4j2
+* JUL
 
 == How it works
 
@@ -139,6 +140,45 @@ Below is a sample Log4j2 configuration:
     </Root>
   </Loggers>
 </Configuration>
+----
+
+==== JUL
+
+With JUL, the converter is a formatter that follows the `SimpleFormatter` implementation (https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
+JUL parameters are located by index, not name, however this formatter allows refering to them by name by using the extended format:
+
+----
+%{nameOfVariable}
+----
+
+Be aware that JUL reserves the following variable names:
+
+* date
+* source
+* logger
+* level
+* message
+* thrown
+
+Optionally a default value is allowed to be given using the `:-` suffix:
+
+----
+%{nameOfVariable:-defaultValue}
+----
+
+In order to format the value itself, follow the standard formatter rules, for example to format as `String`:
+
+----
+%{nameOfVariable:-defaultValue}$s
+----
+
+To add it to any kind of `Handler` just specify the class `JULContextualDataFormatter` as the handler `Formatter`.
+
+[source,properties]
+----
+handlers=java.util.logging.ConsoleHandler
+java.util.logging.ConsoleHandler.formatter=io.github.tsegismont.vertx.contextual.logging.JULContextualDataFormatter
+io.github.tsegismont.vertx.contextual.logging.JULContextualDataFormatter.format="%{requestId:-foobar}$s ### %5$s%n"
 ----
 
 === Saving values in the contextual data map
