@@ -27,7 +27,11 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 
 /**
- * JUL Formatted that is able to process Vert.x Context data.
+ * JUL Formatted that is able to process Vert.x Context data. Besides the format used in the parent class,
+ * vert.x context variables can be referred by name too. For simplicity the default variables are also exposed
+ * by name and cannot be overridden.
+ *
+ * {@inheritDoc}
  * @author Paulo Lopes
  */
 public final class JULContextualDataFormatter extends Formatter {
@@ -47,7 +51,7 @@ public final class JULContextualDataFormatter extends Formatter {
     this(LogManager.getLogManager().getProperty("format"));
   }
 
-  public JULContextualDataFormatter(String template) {
+  JULContextualDataFormatter(String template) {
     // add the default resolvers
     // 1. date
     resolvers.add((record, ctx) -> {
