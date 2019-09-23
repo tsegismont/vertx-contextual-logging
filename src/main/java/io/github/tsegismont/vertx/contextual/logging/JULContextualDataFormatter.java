@@ -48,7 +48,7 @@ public final class JULContextualDataFormatter extends Formatter {
   private final List<BiFunction<LogRecord, ContextInternal, Object>> resolvers = new ArrayList<>();
 
   public JULContextualDataFormatter() {
-    this(LogManager.getLogManager().getProperty("format"));
+    this(LogManager.getLogManager().getProperty(JULContextualDataFormatter.class.getName() + ".format"));
   }
 
   JULContextualDataFormatter(String template) {
