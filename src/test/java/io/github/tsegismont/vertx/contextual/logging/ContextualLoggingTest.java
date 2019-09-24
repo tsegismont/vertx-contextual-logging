@@ -55,6 +55,12 @@ public class ContextualLoggingTest extends VertxTestBase {
     testContextualLogging(log);
   }
 
+  @Test
+  public void testJUL() {
+    log = new JULTestLogger(LOGGING_PATTERN);
+    testContextualLogging(log);
+  }
+
   private void testContextualLogging(TestLogger log) {
     vertx.deployVerticle(new TestVerticle(log), onSuccess(id -> {
       List<String> ids = IntStream.range(0, 10).mapToObj(i -> UUID.randomUUID().toString()).collect(toList());
