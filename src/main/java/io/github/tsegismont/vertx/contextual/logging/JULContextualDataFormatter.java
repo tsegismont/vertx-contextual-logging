@@ -38,7 +38,7 @@ public final class JULContextualDataFormatter extends Formatter {
 
   private static final String placeholderPrefix = "%{";
   private static final String placeholderSuffix = "}";
-  private static final String defaultEmpty = "-";
+  private static final String defaultEmpty = "";
 
   private final String template;
   private final Date dat = new Date();
@@ -52,6 +52,11 @@ public final class JULContextualDataFormatter extends Formatter {
   }
 
   JULContextualDataFormatter(String template) {
+    if (template == null) {
+      // default to the JDK default
+      template = "%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %2$s%n%4$s: %5$s%6$s%n";
+    }
+
     // add the default resolvers
     // 1. date
     resolvers.add((record, ctx) -> {
@@ -142,7 +147,34 @@ public final class JULContextualDataFormatter extends Formatter {
       }
     }
 
-    return buf.toString();
+    // the final transformed template
+    final String format = buf.toString();
+
+    // validate that the format string is valid
+    try {
+      final Object[] args = new Object[resolvers.size()];
+      // fill with dummy data
+      args[0] = new Date();
+      args[1] = "";
+      args[2] = "";
+      args[3] = "";
+      args[4] = "";
+      args[5] = null;
+
+      // fill the custom resolvers
+      for (int i = 6; i < args.length; i++) {
+        args[i] = null;
+      }
+
+      // if the format fails the template is invalid. This is also the technique used in the JDK however
+      // the JDK will silently fallback to the default format in this case it makes sense to abort as the
+      // behavior would not match what the users desires.
+      String.format(format, args);
+    } catch (RuntimeException e) {
+      throw new IllegalArgumentException("format string \"" + template + "\" is not valid.");
+    }
+
+    return format;
   }
 
   private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
