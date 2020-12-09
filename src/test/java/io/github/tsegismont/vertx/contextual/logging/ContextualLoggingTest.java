@@ -83,7 +83,7 @@ public class ContextualLoggingTest extends VertxTestBase {
     List<Future> futures = ids.stream()
       .map(id -> request.putHeader(REQUEST_ID_HEADER, id).send())
       .collect(toList());
-    CompositeFuture.all(futures).<Void>mapEmpty().setHandler(handler);
+    CompositeFuture.all(futures).<Void>mapEmpty().onComplete(handler);
   }
 
   private void verifyOutput(List<String> ids) {
@@ -123,7 +123,7 @@ public class ContextualLoggingTest extends VertxTestBase {
       request = webClient.getAbs("http://worldclockapi.com/api/json/utc/now").as(BodyCodec.jsonObject());
 
       Promise<HttpServer> httpServerPromise = Promise.promise();
-      httpServerPromise.future().<Void>mapEmpty().setHandler(startPromise);
+      httpServerPromise.future().<Void>mapEmpty().onComplete(startPromise);
       vertx.createHttpServer()
         .requestHandler(req -> {
 
