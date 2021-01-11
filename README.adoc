@@ -227,7 +227,7 @@ This process can be automated with `EventBus` interceptors:
 [source,java]
 ----
 vertx.eventBus().addOutboundInterceptor(event -> {
-  String requestId = ContextualData.get("requestId");
+  String requestId = ContextualData.getOrDefault("requestId");
   if (requestId != null) {
     event.message().headers().add("requestId", requestId);
   }
