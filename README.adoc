@@ -1,1 +1,3 @@
+= Archived
+
 This library is now a https://github.com/reactiverse/reactiverse-contextual-logging[Reactiverse] module.
